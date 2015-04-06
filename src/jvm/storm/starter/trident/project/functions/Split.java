@@ -25,8 +25,9 @@ public class Split extends BaseFunction {
         }
 
         String string = tuple.getString(0);
-        for (String spilt : splitter.split(string)) {
-            collector.emit(new Values(spilt.toLowerCase()));
-        }
+        collector.emit(new Values(string));
+        // for (String spilt : splitter.split(string)) {
+        //     collector.emit(new Values(spilt.toLowerCase()));
+        // }
     }
 }

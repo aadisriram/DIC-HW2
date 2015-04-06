@@ -46,13 +46,6 @@ function RandomSentenceSpout() {
     this.runningTupleId = 0;
     this.pending = {};
     var self = this;
-
-    twit.stream('statuses/filter', {track:trackwords}, function(stream) {
-        stream.on('data', function (data) {
-            tweet_t = JSON.stringify(data);
-            queue.putMessage(tweet_t);
-        });
-    });
 };
 
 RandomSentenceSpout.prototype = Object.create(Spout.prototype);
@@ -64,6 +57,15 @@ RandomSentenceSpout.prototype.emitBatch = function(id, collector) {
         collector.emit(new Values(message));
         emitted++;
     }
+}
+
+RandomSentenceSpout.prototype.open = function(map, topologyContext) {
+    twit.stream('statuses/filter', {track:trackwords}, function(stream) {
+        stream.on('data', function (data) {
+            tweet_t = JSON.stringify(data);
+            queue.putMessage(tweet_t);
+        });
+    });
 }
 
 RandomSentenceSpout.prototype.nextTuple = function(done) {

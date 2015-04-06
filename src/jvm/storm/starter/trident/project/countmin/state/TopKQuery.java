@@ -36,5 +36,5 @@ public class TopKQuery extends BaseQueryFunction<CountMinSketchState, String> {
 
     public void execute(TridentTuple tuple, String topK, TridentCollector collector) {
         collector.emit(new Values(topK));
-    }    
+    }
 }

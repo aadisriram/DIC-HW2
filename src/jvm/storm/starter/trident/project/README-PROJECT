@@ -25,7 +25,7 @@ Part 3
 2) Set your environment variables for the twitter dev keys
 3) In the folder that contains "pom.xml", run "mvn package"
 4) Run the following command to test the project code,
-	storm jar target/storm-starter-0.9.3-jar-with-dependencies.jar storm.starter.trident.project.countmin.CountMinSketchTopology
+	storm jar target/storm-starter-0.9.3-jar-with-dependencies.jar storm.starter.trident.project.countmin.CountMinSketchTopology <list of args seperated by space for the tweet topics>
 5) In the CountMinSketchTopology.java file you can choose the type of query you want to make. For top-k, 	uncomment line 137
    To get the count for words uncomment line 134 and comment out line 137
 6) The results alone can be made to display, append the following to instruction point 4

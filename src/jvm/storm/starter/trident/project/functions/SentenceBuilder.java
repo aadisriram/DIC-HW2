@@ -21,19 +21,11 @@ import storm.trident.tuple.TridentTuple;
 
 import java.io.IOException;
 
-/**
- * Default test class.
- *
- * @author fhussonnois
- */
-
-    public class SentenceBuilder extends BaseFunction {
-        @Override
-        public void execute(TridentTuple tuple, TridentCollector collector) {
-            String sentence =  (String)tuple.getString(0);
-            collector.emit(new Values( 
-                new String(sentence))
-            );
-        }
+public class SentenceBuilder extends BaseFunction {
+    @Override
+    public void execute(TridentTuple tuple, TridentCollector collector) {
+        String sentence =  (String)tuple.getString(0);
+        collector.emit(new Values( new String(sentence)));
     }
+}
 
