@@ -12,10 +12,9 @@ import storm.trident.state.StateFactory;
 import storm.trident.testing.MemoryMapState;
 import storm.trident.testing.Split;
 import storm.trident.testing.FixedBatchSpout;
-import backtype.storm.tuple.Values;
 
-import storm.starter.trident.project.countmin.state.CountMinSketchStateFactory;
-import storm.starter.trident.project.countmin.state.CountMinSketchUpdater;
+import storm.starter.trident.project.countmin.state.TopKStateFactory;
+import storm.starter.trident.project.countmin.state.TopKStateUpdater;
 import storm.starter.trident.project.countmin.state.TopKQuery;
 import storm.starter.trident.project.functions.BloomFilter;
 
@@ -28,7 +27,7 @@ import storm.starter.trident.project.functions.NormalizeText;
 import backtype.storm.topology.*;
 import java.util.Map;
 
-public class CountMinSketchTopology {
+public class TopKTopology {
 
 	public static StormTopology buildTopology( String[] filterWords, LocalDRPC drpc ) {
 
@@ -46,27 +45,27 @@ public class CountMinSketchTopology {
 		TwitterSampleSpout spoutTweets = new TwitterSampleSpout(consumerKey, consumerSecret,
 									accessToken, accessTokenSecret, filterWords);;
 
-		TridentState countMinDBMS = topology.newStream("tweets", spoutTweets)
+		TridentState topKDBMS = topology.newStream("tweets", spoutTweets)
 			.each(new Fields("tweet"), new ParseTweet(), new Fields("text", "tweetId", "user"))
 			//extract just the tweet from the three fields we have
 			.each(new Fields("text", "tweetId", "user"), new SentenceBuilder(), new Fields("sentence"))
 			//Split the sentence into words
 			.each(new Fields("sentence"), new Split(), new Fields("wordsl"))
 			//Normalize the text by converting to lower case and removing non alphabets and numbers
-			.each(new Fields("wordsl"), new NormalizeText(), new Fields("lwords"))
+			.each(new Fields("wordsl"), new NormalizeText(), new Fields("words"))
 			//Pass the data through a BloomFilter and remove stop words
-			.each(new Fields("lwords"), new BloomFilter(), new Fields("words"))
+			//.each(new Fields("lwords"), new BloomFilter(), new Fields("words"))
 			//Filter the null
 			.each(new Fields("words"), new FilterNull())
-			//Add the text into our persistent store MinSketch
-			.partitionPersist(new CountMinSketchStateFactory(topk_count), new Fields("words"), new CountMinSketchUpdater())
+			//Add the text into our persistent store TopK
+			.partitionPersist(new TopKStateFactory(topk_count), new Fields("words"), new TopKStateUpdater())
 			//.parallelismHint(3)
 			;
 
 		//Call this to get the top-K words
 		topology.newDRPCStream("get_topk", drpc)
 			//Call the top k query and print the returned list
-			.stateQuery(countMinDBMS, new Fields("args"), new TopKQuery(), new Fields("topk"))
+			.stateQuery(topKDBMS, new Fields("args"), new TopKQuery(), new Fields("topk"))
 			.project(new Fields("topk"))
 			;
 
@@ -89,7 +88,7 @@ public class CountMinSketchTopology {
             //System.out.println("DRPC RESULT: " + drpc.execute("get_count","love hate"));
 
             //Query type to get the top-k items
-            System.out.println("DRPC RESULT TOPK: " + drpc.execute("get_topk",""));
+            System.out.println("Current TopK Hashtags : " + drpc.execute("get_topk",""));
             Thread.sleep(3000);
         }
 

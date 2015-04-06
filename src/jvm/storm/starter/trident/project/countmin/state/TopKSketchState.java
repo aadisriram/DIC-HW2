@@ -30,7 +30,7 @@ import java.util.*;
  * Top-K counter with sliding window, where the window is defined as
  * the number of tweets, in this case it defaults to 1000.
  */
-public class CountMinSketchState implements State, Serializable {
+public class TopKSketchState implements State, Serializable {
 
     long size;
     Map<String, Long> countMap = new HashMap<String, Long>();
@@ -50,11 +50,11 @@ public class CountMinSketchState implements State, Serializable {
 
     PriorityQueue<TweetWord> queue = new PriorityQueue<TweetWord>(10, new WordComparator());
 
-    CountMinSketchState() {
+    TopKSketchState() {
         
     }
 
-    public CountMinSketchState(int topk_size) {
+    public TopKSketchState(int topk_size) {
         this.topk_size = topk_size;
     }
     

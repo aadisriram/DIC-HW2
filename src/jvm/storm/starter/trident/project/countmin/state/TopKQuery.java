@@ -16,8 +16,8 @@ import storm.starter.trident.project.countmin.state.TweetWord;
  *the count min sketch.
  */
 
-public class TopKQuery extends BaseQueryFunction<CountMinSketchState, String> {
-    public List<String> batchRetrieve(CountMinSketchState state, List<TridentTuple> args) {
+public class TopKQuery extends BaseQueryFunction<TopKSketchState, String> {
+    public List<String> batchRetrieve(TopKSketchState state, List<TridentTuple> args) {
         List<String> ret = new ArrayList<String>();
         String result = new String();
 
