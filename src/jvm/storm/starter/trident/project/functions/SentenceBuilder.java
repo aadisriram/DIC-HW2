@@ -5,7 +5,6 @@ import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import storm.starter.trident.project.functions.Tweet;
 import com.google.common.collect.Lists;
 import storm.trident.TridentState;
 import storm.trident.TridentTopology;

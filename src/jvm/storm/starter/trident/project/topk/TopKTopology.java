@@ -1,4 +1,4 @@
-package storm.starter.trident.project.countmin; 
+package storm.starter.trident.project.topk; 
 
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
@@ -13,15 +13,15 @@ import storm.trident.testing.MemoryMapState;
 import storm.trident.testing.Split;
 import storm.trident.testing.FixedBatchSpout;
 
-import storm.starter.trident.project.countmin.state.TopKStateFactory;
-import storm.starter.trident.project.countmin.state.TopKStateUpdater;
-import storm.starter.trident.project.countmin.state.TopKQuery;
+import storm.starter.trident.project.topk.state.TopKStateFactory;
+import storm.starter.trident.project.topk.state.TopKStateUpdater;
+import storm.starter.trident.project.topk.state.TopKQuery;
 import storm.starter.trident.project.functions.BloomFilter;
 
 import storm.starter.trident.project.functions.SentenceBuilder;
 import storm.starter.trident.project.spouts.TwitterSampleSpout;
 import storm.starter.trident.project.functions.ParseTweet;
-import storm.starter.trident.project.functions.Tweet;
+
 import storm.starter.trident.project.functions.NormalizeText;
 
 import backtype.storm.topology.*;
@@ -33,7 +33,7 @@ public class TopKTopology {
 
         TridentTopology topology = new TridentTopology();
 
-		int topk_count = 10;
+		int topk_count = 5;
 
 		//Fetch the twitter credentials from Env variables
 		String consumerKey = System.getenv("TWITTER_CONSUMER_KEY");
@@ -46,15 +46,15 @@ public class TopKTopology {
 									accessToken, accessTokenSecret, filterWords);;
 
 		TridentState topKDBMS = topology.newStream("tweets", spoutTweets)
-			.each(new Fields("tweet"), new ParseTweet(), new Fields("text", "tweetId", "user"))
+			.each(new Fields("tweet"), new ParseTweet(), new Fields("text"))
 			//extract just the tweet from the three fields we have
-			.each(new Fields("text", "tweetId", "user"), new SentenceBuilder(), new Fields("sentence"))
+			.each(new Fields("text"), new SentenceBuilder(), new Fields("sentence"))
 			//Split the sentence into words
 			.each(new Fields("sentence"), new Split(), new Fields("wordsl"))
 			//Normalize the text by converting to lower case and removing non alphabets and numbers
-			.each(new Fields("wordsl"), new NormalizeText(), new Fields("words"))
+			.each(new Fields("wordsl"), new NormalizeText(), new Fields("lwords"))
 			//Pass the data through a BloomFilter and remove stop words
-			//.each(new Fields("lwords"), new BloomFilter(), new Fields("words"))
+			.each(new Fields("lwords"), new BloomFilter(), new Fields("words"))
 			//Filter the null
 			.each(new Fields("words"), new FilterNull())
 			//Add the text into our persistent store TopK

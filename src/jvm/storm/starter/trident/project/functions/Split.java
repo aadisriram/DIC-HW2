@@ -9,6 +9,7 @@ import storm.trident.tuple.TridentTuple;
 
 /**
  * @author Enno Shioji (enno.shioji@peerindex.com)
+ * modified to return the whole tweet by Aaditya Sriram
  */
 public class Split extends BaseFunction {
     private final String on;
@@ -26,8 +27,5 @@ public class Split extends BaseFunction {
 
         String string = tuple.getString(0);
         collector.emit(new Values(string));
-        // for (String spilt : splitter.split(string)) {
-        //     collector.emit(new Values(spilt.toLowerCase()));
-        // }
     }
 }

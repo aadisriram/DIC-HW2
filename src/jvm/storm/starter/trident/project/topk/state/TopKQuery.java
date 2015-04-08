@@ -1,5 +1,4 @@
-//import CountMinSketchState;
-package storm.starter.trident.project.countmin.state;
+package storm.starter.trident.project.topk.state;
 
 import storm.trident.state.BaseQueryFunction;
 import storm.trident.tuple.TridentTuple;
@@ -8,12 +7,12 @@ import java.util.List;
 import java.util.ArrayList;
 import backtype.storm.tuple.Values;
 
-import storm.starter.trident.project.countmin.state.TweetWord;
+import storm.starter.trident.project.topk.state.TweetWord;
 
 /**
  *@author: Aaditya Sriram (asriram4@ncsu.edu)
  *This query method is to get the top K items from 
- *the count min sketch.
+ *the topK sketch.
  */
 
 public class TopKQuery extends BaseQueryFunction<TopKSketchState, String> {
@@ -31,6 +30,7 @@ public class TopKQuery extends BaseQueryFunction<TopKSketchState, String> {
         }
 
         ret.add(result);
+        
         return ret;
     }
 

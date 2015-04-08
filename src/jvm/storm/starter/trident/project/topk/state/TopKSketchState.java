@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package storm.starter.trident.project.countmin.state;
+package storm.starter.trident.project.topk.state;
 
 import storm.trident.state.State;
 
@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-import storm.starter.trident.project.countmin.state.TweetWord;
+import storm.starter.trident.project.topk.state.TweetWord;
 
 import java.io.Serializable;
 

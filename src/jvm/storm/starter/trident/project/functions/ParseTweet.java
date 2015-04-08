@@ -34,6 +34,6 @@ public class ParseTweet extends BaseFunction {
                 tweetText += entity.getText() + " ";
             }
         }
-        collector.emit(new Values(tweetText, parsed.getId(), userScreenName));
+        collector.emit(new Values(tweetText));
     }
 }
