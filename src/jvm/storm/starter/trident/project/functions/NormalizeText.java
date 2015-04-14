@@ -14,9 +14,9 @@ public class NormalizeText extends BaseFunction {
 
     @Override
     public void execute(TridentTuple tuple, TridentCollector collector) {
+
         String string = tuple.getString(0);
         string = string.replaceAll("[^a-zA-Z0-9]", "");
-        string = string.trim();
         collector.emit(new Values(string.toLowerCase()));
     }
 }
