@@ -159,17 +159,17 @@ public class CountMinSketchTopology {
         	
         String[] filterWords = args.clone();
         conf.setNumWorkers(3);
-      	StormSubmitter.submitTopologyWithProgressBar("get_count", conf, buildTopology(filterWords, null));
-        // cluster.submitTopology("get_count", conf, buildTopology(filterWords, drpc));
+      	//StormSubmitter.submitTopologyWithProgressBar("get_count", conf, buildTopology(filterWords, null));
+        cluster.submitTopology("get_count", conf, buildTopology(filterWords, drpc));
 
-        // for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
         	//Query type to get the count for certain words
-            // System.out.println("DRPC RESULT: " + drpc.execute("get_count","love hate"));
+            System.out.println("DRPC RESULT: " + drpc.execute("get_count","love hate"));
 
             //Query type to get the top-k items
-        //     System.out.println("DRPC RESULT TOPK: " + drpc.execute("get_topk",""));
-        //     Thread.sleep(3000);
-        // }
+            System.out.println("DRPC RESULT TOPK: " + drpc.execute("get_topk",""));
+            Thread.sleep(3000);
+        }
 
 		System.out.println("STATUS: OK");
 		//cluster.shutdown();
