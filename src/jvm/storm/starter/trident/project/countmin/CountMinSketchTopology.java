@@ -25,16 +25,9 @@ import storm.starter.trident.project.countmin.state.CountMinSketchUpdater;
 import storm.starter.trident.project.countmin.state.TopKQuery;
 import storm.starter.trident.project.functions.BloomFilter;
 
-import storm.starter.trident.project.functions.TweetBuilder;
-import storm.starter.trident.project.functions.DocumentBuilder;
-import storm.starter.trident.project.functions.ExtractDocumentInfo;
-import storm.starter.trident.project.functions.ExtractSearchArgs;
 import storm.starter.trident.project.functions.SentenceBuilder;
-import storm.starter.trident.project.functions.CreateJson;
 import storm.starter.trident.project.spouts.TwitterSampleSpout;
 import storm.starter.trident.project.functions.ParseTweet;
-import storm.starter.trident.project.filters.Print;
-import storm.starter.trident.project.filters.PrintFilter;
 import storm.starter.trident.project.functions.Tweet;
 
 import storm.starter.trident.project.functions.NormalizeText;
@@ -50,8 +43,6 @@ import storm.trident.operation.TridentCollector;
 import org.apache.storm.hdfs.trident.*;
 import org.apache.storm.hdfs.trident.rotation.*;
 import org.apache.storm.hdfs.trident.format.*;
-
-import storm.starter.trident.project.filters.*;
 
 import backtype.storm.StormSubmitter;
 

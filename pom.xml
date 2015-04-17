@@ -137,21 +137,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>1.4.4</version>
-        </dependency>
-	<dependency>
-  		<groupId>com.github.tlrx</groupId>
-  		<artifactId>elasticsearch-test</artifactId>
-  		<version>1.2.1</version>
-	</dependency>
-        <dependency>
-        <groupId>com.github.fhuss</groupId>
-            <artifactId>storm-elasticsearch</artifactId>
-            <version>0.2.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
             <version>3.0</version>
