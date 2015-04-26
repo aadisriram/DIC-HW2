@@ -49,7 +49,7 @@ public class CountMinSketchTopology {
 		String consumerKey = System.getenv("TWITTER_CONSUMER_KEY");
     	String consumerSecret = System.getenv("TWITTER_CONSUMER_SECRET");
     	String accessToken = System.getenv("TWITTER_ACCESS_TOKEN_KEY");
-    	String accessTokenSecret = sSystem.getenv("TWITTER_ACCESS_TOKEN_SECRET");
+    	String accessTokenSecret = System.getenv("TWITTER_ACCESS_TOKEN_SECRET");
 
     	Fields hdfsFields = new Fields("tweetId", "words");
     	Fields tweetField = new Fields("tweet");
