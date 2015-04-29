@@ -24,6 +24,7 @@ import storm.kafka.trident.TridentKafkaConfig;
 import storm.starter.trident.project.countmin.state.InvertedIndexQuery;
 import storm.starter.trident.project.countmin.state.InvertedIndexStateFactory;
 import storm.starter.trident.project.countmin.state.InvertedIndexUpdater;
+import storm.starter.trident.project.filters.EmptyStringFilter;
 import storm.starter.trident.project.filters.PrintFilter;
 import storm.starter.trident.project.functions.BloomFilter;
 import storm.starter.trident.project.functions.ConcatFunction;
@@ -32,6 +33,7 @@ import storm.starter.trident.project.functions.ParseTweet;
 import storm.starter.trident.project.spouts.TwitterSampleSpout;
 import storm.trident.TridentState;
 import storm.trident.TridentTopology;
+import storm.trident.operation.Filter;
 import storm.trident.operation.builtin.FilterNull;
 import storm.trident.state.StateFactory;
 import storm.trident.testing.Split;
@@ -92,6 +94,7 @@ public class CountMinSketchTopology {
 		 TridentState state = topology.newStream("tweets", spoutTweets)
              .each(spoutTweets.getOutputFields(), new ParseTweet(), new Fields("hashtags", "tweetId", "username"))
 //            .each(new Fields("tweet"), new ParseTweet(), new Fields("hashtags", "tweetId"))
+             .each(new Fields("tweetId", "username"), new ConcatFunction(), new Fields("newTweetId"))
              .each(new Fields("hashtags"), new Split(), new Fields("hashtag"))
              .each(new Fields("hashtag"), new FilterNull())
              .each(new Fields("hashtag"), new NormalizeText(), new Fields("lWords"))
@@ -99,7 +102,7 @@ public class CountMinSketchTopology {
              .each(new Fields("lWords"), new BloomFilter(), new Fields("words"))
                      //Filter the null
              .each(new Fields("words"), new FilterNull())
-             .each(new Fields("tweetId", "username"), new ConcatFunction(), new Fields("newTweetId"))
+             .each(new Fields("words"), new EmptyStringFilter())
             .partitionPersist(factory, hdfsFields, new HdfsUpdater(), new Fields());
 
 		TridentState countMinDBMS = topology.newStream("tweets", spoutTweets)
