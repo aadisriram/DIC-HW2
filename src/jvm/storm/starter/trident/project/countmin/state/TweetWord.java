@@ -18,20 +18,31 @@ public class TweetWord implements Serializable {
     //Stored count estimate from the count min sketch
     private long id;
 
+    private String username;
+
+    //Parameterized Constructor to initialize, duh
+    public TweetWord(List<String> hashtag, long id, String username) {
+        this.hashtags = hashtag;
+        this.id = id;
+        this.username = username;
+    }
+
     //Empty Default Constructor, just in case someone hates
     //using parameterized constructors
     public TweetWord() {
 
     }
 
-    public void addHashtags(String hashtag) {
-        hashtags.add(hashtag);
+    public String getUsername() {
+        return username;
     }
 
-    //Parameterized Constructor to initialize, duh
-    public TweetWord(List<String> hashtag, long id) {
-    	this.hashtags = hashtag;
-    	this.id = id;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void addHashtags(String hashtag) {
+        hashtags.add(hashtag);
     }
 
     @Override
@@ -41,9 +52,8 @@ public class TweetWord implements Serializable {
 
         TweetWord tweetWord = (TweetWord) o;
 
-        if (id != tweetWord.id) return false;
-        if (hashtags != null ? !hashtags.equals(tweetWord.hashtags) : tweetWord.hashtags != null) return false;
-
+        if (id != tweetWord.getId()) return false;
+        if (username != tweetWord.getUsername()) return false;
         return true;
     }
 

@@ -31,8 +31,8 @@ public class ParseTweet extends BaseFunction {
 
     @Override
     public void execute(TridentTuple tuple, TridentCollector collector) {
-        // Status parsed = parse((String)tuple.get(0));
-        Status parsed = (Status)tuple.get(0);
+        Status parsed = parse((String)tuple.get(0));
+//        Status parsed = (Status)tuple.get(0);
         User user = parsed.getUser();
         String userScreenName = user.getScreenName();
 
@@ -44,7 +44,7 @@ public class ParseTweet extends BaseFunction {
                 tweetText.append(entity.getText() + " ");
             }
         }
-        collector.emit(new Values(tweetText.toString(), parsed.getId()));
+        collector.emit(new Values(tweetText.toString(), parsed.getId(), userScreenName));
     }
 
     private Status parse(String rawJson) {

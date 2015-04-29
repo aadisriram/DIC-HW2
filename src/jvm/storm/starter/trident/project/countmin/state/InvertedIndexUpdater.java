@@ -17,16 +17,20 @@ public class InvertedIndexUpdater extends BaseStateUpdater<InvertedIndexState> {
             // Gets all the space separated hashtags.
             String hashTags = tuple.getString(0);
             long id = tuple.getLong(1);
-            String[] tag = hashTags.split(" ");
-            // Creates the list to be added to the state
-            List<String> tweetList = new ArrayList<String>();
-            for(String t : tag) {
-                if(t != null && t.trim().length() != 0) {
-                    tweetList.add(t);
+            String user = tuple.getString(2);
+            if(hashTags != null && !hashTags.trim().isEmpty()) {
+                String[] tag = hashTags.split(" ");
+                // Creates the list to be added to the state
+                List<String> tweetList = new ArrayList<String>();
+                for (String t : tag) {
+                    if (t != null && t.trim().length() != 0) {
+                        tweetList.add(t);
+                    }
                 }
+                // Adds the list to the state.
+                if(!tweetList.isEmpty())
+                    invertedIndexState.add(new TweetWord(tweetList, id, user));
             }
-            // Adds the list to the state.
-            invertedIndexState.add(new TweetWord(tweetList,id));
         }
     }
 }

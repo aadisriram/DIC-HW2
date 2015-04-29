@@ -1,6 +1,7 @@
 package storm.starter.trident.project.countmin.state;
 
 import backtype.storm.tuple.Values;
+import storm.starter.trident.project.functions.Tweet;
 import storm.trident.operation.TridentCollector;
 import storm.trident.state.BaseQueryFunction;
 import storm.trident.state.State;
@@ -19,17 +20,19 @@ public class InvertedIndexQuery extends BaseQueryFunction<InvertedIndexState, St
     @Override
     public List<String> batchRetrieve(InvertedIndexState invertedIndexState, List<TridentTuple> input) {
         List<String> ids = new ArrayList<String>();
-        Set<Long> uniqueIds = new HashSet<Long>();
+        Set<TweetWord> uniqueIds = new HashSet<TweetWord>();
         for(TridentTuple tuple : input) {
-            Set<Long> set = invertedIndexState.getTweetIds(tuple.getString(0));
+            //System.out.println("DEBUG input passed: " + tuple.getString(0));
+            Set<TweetWord> set = invertedIndexState.getTweetIds(tuple.getString(0));
+            //System.out.println("DEBUG output set: " + set.size());
             uniqueIds.addAll(set);
         }
 
         StringBuilder sb = new StringBuilder();
         sb.append(",");
 
-        for(long id : uniqueIds) {
-            sb.append(id+",");
+        for(TweetWord tweet : uniqueIds) {
+            sb.append(tweet.getId() + "_" + tweet.getUsername() + ",");
         }
         ids.add(sb.toString());
         return ids;

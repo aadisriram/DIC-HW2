@@ -12,9 +12,12 @@ import java.util.Map;
 public class InvertedIndexStateFactory implements StateFactory {
 
     protected int windowsize;
+    protected InvertedIndexState state;
 
     public InvertedIndexStateFactory(int windowsize) {
+
         this.windowsize = windowsize;
+        state = new InvertedIndexState(windowsize);
     }
 
     @Override
