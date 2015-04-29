@@ -49,7 +49,7 @@ public class CountMinSketchTopology {
 
         TridentTopology topology = new TridentTopology();
 
-        int windowSize = 10000;
+        int windowSize = 1000;
 
 		//Fetch the twitter credentials from Env variables
 		String consumerKey = System.getenv("TWITTER_CONSUMER_KEY");
@@ -68,31 +68,35 @@ public class CountMinSketchTopology {
         RecordFormat recordFormat = new DelimitedRecordFormat()
                  .withFields(hdfsFields);
 
-        FileRotationPolicy rotationPolicy = new FileSizeRotationPolicy(5.0f, FileSizeRotationPolicy.Units.MB);
+        FileRotationPolicy rotationPolicy = new FileSizeRotationPolicy(100.0f, FileSizeRotationPolicy.Units.KB);
 
         HdfsState.Options options = new HdfsState.HdfsFileOptions()
                 .withFileNameFormat(fileNameFormat)
                 .withRecordFormat(recordFormat)
                 .withRotationPolicy(rotationPolicy)
-                .withFsUrl("hdfs://152.46.18.144:54310");
+                .withFsUrl("hdfs://152.46.19.147:54310");
 
         StateFactory factory = new HdfsStateFactory().withOptions(options);
-//
+
 		BrokerHosts zk = new ZkHosts("localhost");
 		TridentKafkaConfig spoutConf = new TridentKafkaConfig(zk, "tweet_message");
 
 		spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
-		OpaqueTridentKafkaSpout
-                spoutTweets = new OpaqueTridentKafkaSpout(spoutConf);
+		OpaqueTridentKafkaSpout spoutTweets = new OpaqueTridentKafkaSpout(spoutConf);
 
-        // Create Twitter's spout
+        TridentKafkaConfig spoutConfHdfs = new TridentKafkaConfig(zk, "tweet_message_hdfs");
+
+        spoutConfHdfs.scheme = new SchemeAsMultiScheme(new StringScheme());
+        OpaqueTridentKafkaSpout spoutTweetsHdfs = new OpaqueTridentKafkaSpout(spoutConfHdfs);
+
+//        Create Twitter's spout
 //		TwitterSampleSpout spoutTweets = new TwitterSampleSpout(consumerKey, consumerSecret,
 //									accessToken, accessTokenSecret, filterWords);
 
         InvertedIndexStateFactory stateFactory = new InvertedIndexStateFactory(windowSize);
 
-		 TridentState state = topology.newStream("tweets", spoutTweets)
-             .each(spoutTweets.getOutputFields(), new ParseTweet(), new Fields("hashtags", "tweetId", "username"))
+		 TridentState state = topology.newStream("tweets", spoutTweetsHdfs)
+             .each(spoutTweetsHdfs.getOutputFields(), new ParseTweet(), new Fields("hashtags", "tweetId", "username"))
 //            .each(new Fields("tweet"), new ParseTweet(), new Fields("hashtags", "tweetId"))
              .each(new Fields("tweetId", "username"), new ConcatFunction(), new Fields("newTweetId"))
              .each(new Fields("hashtags"), new Split(), new Fields("hashtag"))
@@ -107,7 +111,7 @@ public class CountMinSketchTopology {
 
 		TridentState countMinDBMS = topology.newStream("tweets", spoutTweets)
             .each(spoutTweets.getOutputFields(), new ParseTweet(), new Fields("hashtags", "tweetId", "username"))
-//            .each(new Fields("tweet"), new ParseTweet(), new Fields("hashtags", "tweetId"))
+//            .each(new Fields("tweet"), new ParseTweet(), new Fields("hashtags", "tweetId", "username"))
             .each(new Fields("hashtags"), new Split(), new Fields("hashtag"))
             .each(new Fields("hashtag"), new FilterNull())
 			.each(new Fields("hashtag"), new NormalizeText(), new Fields("lWords"))
@@ -115,9 +119,10 @@ public class CountMinSketchTopology {
 			.each(new Fields("lWords"), new BloomFilter(), new Fields("words"))
 			//Filter the null
 			.each(new Fields("words"), new FilterNull())
-            //.each(new Fields("words", "tweetId"), new PrintFilter())
-			//Add the text into our persistent store MinSketch
-			.partitionPersist(stateFactory, new Fields("words", "tweetId", "username"), new InvertedIndexUpdater());
+            .each(new Fields("words"), new EmptyStringFilter())
+//            .each(new Fields("words", "tweetId", "username"), new PrintFilter())
+            //Add the text into our persistent store MinSketch
+            .partitionPersist(stateFactory, new Fields("words", "tweetId", "username"), new InvertedIndexUpdater());
 
 		//Call this to get the count of words passed in the query
 		topology.newDRPCStream("get_tweets", drpc)
@@ -141,7 +146,7 @@ public class CountMinSketchTopology {
         	
         String[] filterWords = args.clone();
         conf.setNumWorkers(3);
-      	StormSubmitter.submitTopologyWithProgressBar("get_count", conf, buildTopology(filterWords, null));
+        StormSubmitter.submitTopologyWithProgressBar("get_count", conf, buildTopology(filterWords, null));
 //        cluster.submitTopology("get_count", conf, buildTopology(filterWords, drpc));
 //
 //        while(true) {
@@ -150,7 +155,7 @@ public class CountMinSketchTopology {
 //            Thread.sleep(3000);
 //        }
 
-		//System.out.println("STATUS: OK");
+//		System.out.println("STATUS: OK");
 		//cluster.shutdown();
         //drpc.shutdown();
 	}

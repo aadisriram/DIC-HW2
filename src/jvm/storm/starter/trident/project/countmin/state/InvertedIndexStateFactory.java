@@ -22,6 +22,6 @@ public class InvertedIndexStateFactory implements StateFactory {
 
     @Override
     public State makeState(Map map, IMetricsContext iMetricsContext, int i, int i1) {
-        return new InvertedIndexState(windowsize);
+        return state;
     }
 }

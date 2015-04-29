@@ -34,10 +34,13 @@ public class InvertedIndexState implements State, Serializable {
                     Set<TweetWord> newSet = new HashSet<TweetWord>();
                     for(TweetWord tweet : ids) {
                         if(tweet.getId() != oldId) {
+                            //System.out.println("DEBUG " + oldId + ":" + tweet.getId());
                             newSet.add(tweet);
                         }
                     }
-                    invertedIndex.put(hashtag, newSet);
+                    if(!newSet.isEmpty()) {
+                        invertedIndex.put(hashtag, newSet);
+                    }
                 }
             }
         }
@@ -49,13 +52,11 @@ public class InvertedIndexState implements State, Serializable {
         for(String hashtag : hashtags) {
             if(invertedIndex.containsKey(hashtag)) {
                 Set<TweetWord> set = invertedIndex.remove(hashtag);
-                newTweet.setHashtags(new ArrayList<String>());
-                set.add(newTweet);
+                set.add(new TweetWord(new ArrayList<String>(), id, username));
                 invertedIndex.put(hashtag, set);
             } else {
                 Set<TweetWord> idSet = new HashSet<TweetWord>();
-                newTweet.setHashtags(new ArrayList<String>());
-                idSet.add(newTweet);
+                idSet.add(new TweetWord(new ArrayList<String>(), id, username));
                 invertedIndex.put(hashtag, idSet);
             }
         }
@@ -64,6 +65,8 @@ public class InvertedIndexState implements State, Serializable {
     public Set<TweetWord> getTweetIds(String hashtag) {
         //System.out.println(invertedIndex.keySet().size());
         if(invertedIndex.containsKey(hashtag)) {
+            //System.out.println("DEBUG window : " + slidingWindow.size());
+            //System.out.println("DEBUG index : " + invertedIndex.size());
             return invertedIndex.get(hashtag);
         } else {
             return Collections.emptySet();
