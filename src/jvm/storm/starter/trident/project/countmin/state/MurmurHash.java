@@ -26,8 +26,6 @@ package storm.starter.trident.project.countmin.state;
  * Andrzej Bialecki (ab at getopt org).
  * </p>
  *
- * Modified by Preetham MS. Originally by https://github.com/addthis/stream-lib/
- * @author: Preetham MS (pmahish@ncsu.edu)
  */
 public class MurmurHash {
 

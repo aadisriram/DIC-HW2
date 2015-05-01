@@ -49,7 +49,7 @@ public class CountMinSketchTopology {
 
         TridentTopology topology = new TridentTopology();
 
-        int windowSize = 1000;
+        int windowSize = 20000;
 
 		//Fetch the twitter credentials from Env variables
 		String consumerKey = System.getenv("TWITTER_CONSUMER_KEY");
@@ -78,7 +78,7 @@ public class CountMinSketchTopology {
 
         StateFactory factory = new HdfsStateFactory().withOptions(options);
 
-		BrokerHosts zk = new ZkHosts("localhost");
+		BrokerHosts zk = new ZkHosts("152.46.20.223:2181");
 		TridentKafkaConfig spoutConf = new TridentKafkaConfig(zk, "tweet_message");
 
 		spoutConf.scheme = new SchemeAsMultiScheme(new StringScheme());
@@ -101,9 +101,9 @@ public class CountMinSketchTopology {
              .each(new Fields("tweetId", "username"), new ConcatFunction(), new Fields("newTweetId"))
              .each(new Fields("hashtags"), new Split(), new Fields("hashtag"))
              .each(new Fields("hashtag"), new FilterNull())
-             .each(new Fields("hashtag"), new NormalizeText(), new Fields("lWords"))
+//             .each(new Fields("hashtag"), new NormalizeText(), new Fields("lWords"))
                      //Pass the data through a BloomFilter and remove stop words
-             .each(new Fields("lWords"), new BloomFilter(), new Fields("words"))
+             .each(new Fields("hashtag"), new BloomFilter(), new Fields("words"))
                      //Filter the null
              .each(new Fields("words"), new FilterNull())
              .each(new Fields("words"), new EmptyStringFilter())
@@ -114,9 +114,9 @@ public class CountMinSketchTopology {
 //            .each(new Fields("tweet"), new ParseTweet(), new Fields("hashtags", "tweetId", "username"))
             .each(new Fields("hashtags"), new Split(), new Fields("hashtag"))
             .each(new Fields("hashtag"), new FilterNull())
-			.each(new Fields("hashtag"), new NormalizeText(), new Fields("lWords"))
-			//Pass the data through a BloomFilter and remove stop words
-			.each(new Fields("lWords"), new BloomFilter(), new Fields("words"))
+//			.each(new Fields("hashtag"), new NormalizeText(), new Fields("lWords"))
+            //Pass the data through a BloomFilter and remove stop words
+			.each(new Fields("hashtag"), new BloomFilter(), new Fields("words"))
 			//Filter the null
 			.each(new Fields("words"), new FilterNull())
             .each(new Fields("words"), new EmptyStringFilter())

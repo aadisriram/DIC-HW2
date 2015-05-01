@@ -6,28 +6,21 @@ import org.slf4j.LoggerFactory;
 import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
-
+import twitter4j.HashtagEntity;
 import twitter4j.Status;
-import twitter4j.TwitterException;
 import twitter4j.TwitterObjectFactory;
 import twitter4j.User;
-import twitter4j.json.DataObjectFactory;
 
-
+import java.util.HashSet;
+import java.util.Set;
 
 // Local functions
-import storm.starter.trident.project.functions.Content;
-import storm.starter.trident.project.functions.ContentExtracter;
-
-import twitter4j.HashtagEntity;
 
 /**
- * @author Enno Shioji (enno.shioji@peerindex.com)
+ * @author Aaditya Sriram
  */
 public class ParseTweet extends BaseFunction {
     private static final Logger log = LoggerFactory.getLogger(ParseTweet.class);
-
-    private ContentExtracter extracter;
 
     @Override
     public void execute(TridentTuple tuple, TridentCollector collector) {
@@ -39,9 +32,22 @@ public class ParseTweet extends BaseFunction {
         StringBuilder tweetText = new StringBuilder();
         HashtagEntity[] hashtagEntities = parsed.getHashtagEntities();
 
+        Set<String> hashtags = new HashSet<String>();
+
         if(hashtagEntities != null) {
             for(HashtagEntity entity : hashtagEntities) {
-                tweetText.append(entity.getText() + " ");
+                if(entity.getText() != null) {
+                    String hashtag = entity.getText();
+                    hashtag = hashtag.replaceAll("[^a-zA-Z0-9]", "");
+                    hashtag = hashtag.toLowerCase();
+                    if(!hashtag.isEmpty()) {
+                        hashtags.add(hashtag);
+                    }
+                }
+            }
+
+            for(String hashtag : hashtags) {
+                tweetText.append(hashtag + " ");
             }
         }
         collector.emit(new Values(tweetText.toString(), parsed.getId(), userScreenName));

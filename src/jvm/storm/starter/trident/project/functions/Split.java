@@ -6,7 +6,6 @@ import storm.trident.operation.BaseFunction;
 import storm.trident.operation.TridentCollector;
 import storm.trident.tuple.TridentTuple;
 
-
 /**
  * @author Enno Shioji (enno.shioji@peerindex.com)
  */

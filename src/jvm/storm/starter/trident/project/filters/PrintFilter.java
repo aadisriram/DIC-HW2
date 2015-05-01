@@ -1,10 +1,11 @@
 package storm.starter.trident.project.filters;
 
-
 import storm.trident.operation.BaseFilter;
 import storm.trident.tuple.TridentTuple;
 
 /**
+ * Only used to debug the code. Not used in production.
+ *
  * Created by Sunil Kalmadka on 4/5/2015.
  */
 
